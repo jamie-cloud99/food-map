@@ -25,14 +25,10 @@ const PLACE_PHOTO_API_URL =
 export async function geocodeAddress(address: string): Promise<Location> {
   // Use mock data in development mode or when API is not configured
   if (USE_MOCK_DATA || !GOOGLE_PLACES_API_KEY) {
-    console.log('🎭 Using MOCK geocoding data for:', address)
     return mockGeocodeAddress(address)
   }
 
   try {
-    console.log('Geocoding address:', address)
-    console.log('API Key exists:', !!GOOGLE_PLACES_API_KEY)
-
     const response = await axios.get<GoogleGeocodeResponse>(GEOCODING_API_URL, {
       params: {
         address,
@@ -40,8 +36,6 @@ export async function geocodeAddress(address: string): Promise<Location> {
         language: 'zh-TW',
       },
     })
-
-    console.log('Geocoding API response status:', response.data.status)
 
     if (response.data.status !== 'OK' || !response.data.results.length) {
       console.warn(`❌ Geocoding API failed: ${response.data.status}`)
@@ -57,7 +51,6 @@ export async function geocodeAddress(address: string): Promise<Location> {
     }
 
     const { lat, lng } = firstResult.geometry.location
-    console.log('✅ Geocoded location:', { lat, lng })
     return { lat, lng }
   } catch (error) {
     console.error('Geocoding error:', error)
