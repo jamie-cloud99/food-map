@@ -20,6 +20,46 @@ const eslintConfig = [
       "next-env.d.ts",
     ],
   },
+  {
+    files: ["**/*.ts", "**/*.tsx"],
+    languageOptions: {
+      parserOptions: {
+        project: "./tsconfig.json",
+        tsconfigRootDir: __dirname,
+      },
+    },
+    rules: {
+      // TypeScript specific rules
+      "@typescript-eslint/no-explicit-any": "error",
+      "@typescript-eslint/consistent-type-definitions": ["error", "type"],
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
+      "@typescript-eslint/explicit-function-return-type": [
+        "warn",
+        {
+          allowExpressions: true,
+          allowTypedFunctionExpressions: true,
+          allowHigherOrderFunctions: true,
+        },
+      ],
+      "@typescript-eslint/no-non-null-assertion": "warn",
+
+      // Disable rules that require type information (too slow for large projects)
+      // "@typescript-eslint/prefer-nullish-coalescing": "warn",
+      // "@typescript-eslint/prefer-optional-chain": "warn",
+
+      // General code quality rules
+      "no-console": ["warn", { allow: ["warn", "error"] }],
+      "prefer-const": "error",
+      "no-var": "error",
+    },
+  },
 ];
 
 export default eslintConfig;
