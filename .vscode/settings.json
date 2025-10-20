@@ -1,0 +1,13 @@
+{
+  "github.copilot.chat.commitMessageGeneration.instructions": [
+    {
+      "text": "Write a concise commit message from 'git diff --staged' present tense, active voice, max 240 characters per line, no code blocks.`"
+    },
+    {
+      "text": "title must be in the format `TYPE(file/topic): [description]` where `TYPE` is one of the following: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`, `revert`. get branch name by `git branch --show-current`"
+    },
+    {
+      "text": "Provide a detailed body. List changes in bullet points (•), be concise and clear. Limit each point to 72 characters."
+    }
+  ],
+}
