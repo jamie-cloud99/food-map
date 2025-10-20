@@ -3,6 +3,7 @@
 import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
+import { useSearchPlaces } from '@/lib/features/search'
 import PlaceCard from '@/components/PlaceCard'
 import type { Place, Location } from '@/types/place'
 
@@ -19,11 +20,11 @@ const MapView = dynamic(() => import('@/components/MapView'), {
 function ResultsContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [location, setLocation] = useState<Location | null>(null)
   const [places, setPlaces] = useState<Place[]>([])
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null)
+
+  const { mutate: searchPlaces, isPending: isLoading, error } = useSearchPlaces()
 
   const address = searchParams.get('address')
   const radius = parseInt(searchParams.get('radius') || '1000')
@@ -34,41 +35,21 @@ function ResultsContent() {
       return
     }
 
-    const searchPlaces = async () => {
-      setIsLoading(true)
-      setError(null)
-
-      try {
-        const response = await fetch('/api/search', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            address,
-            radius,
-            type: 'all',
-          }),
-        })
-
-        if (!response.ok) {
-          const errorData = await response.json()
-          throw new Error(errorData.error || '搜尋失敗')
-        }
-
-        const data = await response.json()
+    // 使用 mutate 進行搜尋，結果會在 onSuccess 回調中處理
+    searchPlaces({
+      address,
+      radius,
+      type: 'all',
+    }, {
+      onSuccess: (data) => {
         setLocation(data.location)
         setPlaces(data.top5)
-      } catch (err) {
+      },
+      onError: (err) => {
         console.error('Search error:', err)
-        setError(err instanceof Error ? err.message : '搜尋失敗，請稍後再試')
-      } finally {
-        setIsLoading(false)
       }
-    }
-
-    searchPlaces()
-  }, [address, radius, router])
+    })
+  }, [address, radius, router, searchPlaces])
 
   if (isLoading) {
     return (
@@ -88,7 +69,7 @@ function ResultsContent() {
         <div className="text-center space-y-4 max-w-md">
           <div className="text-6xl">😕</div>
           <h2 className="text-2xl font-bold text-foreground">搜尋失敗</h2>
-          <p className="text-muted">{error}</p>
+          <p className="text-muted">{error?.message}</p>
           <button
             onClick={() => router.push('/')}
             className="px-6 py-3 bg-primary text-white rounded-lg
