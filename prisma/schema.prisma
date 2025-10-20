@@ -1,0 +1,50 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// 快取 Google Places API 的美食地點資料
+model CachedPlace {
+  id               String   @id @default(uuid())
+  placeId          String   @unique @db.VarChar(255) // Google Places ID
+  name             String   @db.VarChar(255)
+  address          String   @db.Text
+  latitude         Float
+  longitude        Float
+  rating           Float?
+  userRatingsTotal Int?     @map("user_ratings_total")
+  priceLevel       Int?     @map("price_level") // 1-4
+  types            Json     // 儲存為 JSON 陣列
+  photoReference   String?  @map("photo_reference") @db.VarChar(500)
+  vicinity         String?  @db.VarChar(500) // 簡短地址
+  isOpen           Boolean? @map("is_open") // 是否營業中
+  lastUpdated      DateTime @default(now()) @map("last_updated")
+
+  @@index([latitude, longitude])
+  @@index([placeId])
+  @@map("cached_places")
+}
+
+// 搜尋記錄（可選，用於分析）
+model SearchLog {
+  id            String   @id @default(uuid())
+  searchAddress String   @map("search_address") @db.VarChar(500)
+  latitude      Float
+  longitude     Float
+  radius        Int      // 搜尋半徑（公尺）
+  resultCount   Int      @map("result_count")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@index([createdAt])
+  @@map("search_logs")
+}
