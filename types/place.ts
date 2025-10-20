@@ -3,13 +3,13 @@
  */
 
 // 地理位置
-export interface Location {
+export type Location = {
   lat: number
   lng: number
 }
 
 // 美食地點基本資訊
-export interface Place {
+export type Place = {
   id: string
   placeId: string // Google Places ID
   name: string
@@ -28,7 +28,7 @@ export interface Place {
 }
 
 // 美食地點詳細資訊
-export interface PlaceDetail extends Place {
+export type PlaceDetail = {
   formattedAddress: string
   phoneNumber?: string
   website?: string
@@ -38,10 +38,10 @@ export interface PlaceDetail extends Place {
   }
   reviews?: Review[]
   photos?: PlacePhoto[]
-}
+} & Place
 
 // 評論
-export interface Review {
+export type Review = {
   authorName: string
   rating: number
   text: string
@@ -50,7 +50,7 @@ export interface Review {
 }
 
 // 照片
-export interface PlacePhoto {
+export type PlacePhoto = {
   photoReference: string
   height: number
   width: number
@@ -58,14 +58,14 @@ export interface PlacePhoto {
 }
 
 // 搜尋請求
-export interface SearchRequest {
+export type SearchRequest = {
   address: string
   radius?: number // 預設 1000m
   type?: PlaceType
 }
 
 // 搜尋回應
-export interface SearchResponse {
+export type SearchResponse = {
   location: Location
   places: Place[]
   top5: Place[]
@@ -88,7 +88,7 @@ export type SortBy =
   | 'reviews'     // 評論數
 
 // 篩選條件
-export interface FilterOptions {
+export type FilterOptions = {
   priceLevel?: number[] // [1, 2, 3, 4]
   types?: PlaceType[]
   minRating?: number // 3.5, 4.0, 4.5
