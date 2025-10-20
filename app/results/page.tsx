@@ -92,7 +92,7 @@ function ResultsContent() {
           <button
             onClick={() => router.push('/')}
             className="px-6 py-3 bg-primary text-white rounded-lg
-                     hover:bg-primary/90 transition-colors"
+                      hover:bg-primary/90 transition-colors"
           >
             返回首頁
           </button>
@@ -116,7 +116,7 @@ function ResultsContent() {
           <button
             onClick={() => router.push('/')}
             className="px-6 py-3 bg-primary text-white rounded-lg
-                     hover:bg-primary/90 transition-colors"
+                      hover:bg-primary/90 transition-colors"
           >
             返回首頁
           </button>
