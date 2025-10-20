@@ -99,6 +99,12 @@ export async function searchNearbyPlaces(
           mapGooglePlaceToPlace(result, location)
         )
         allPlaces.push(...places)
+      } else if (response.data.status === 'ZERO_RESULTS') {
+        console.warn(`⚠️  No results found for type: ${placeType}`)
+      } else {
+        console.error(`❌ Places API failed for type: ${placeType}`)
+        console.error(`Status: ${response.data.status}`)
+        console.error(`Error message: ${response.data.error_message ?? 'Unknown error'}`)
       }
     }
 
