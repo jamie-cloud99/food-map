@@ -40,14 +40,6 @@ const eslintConfig = [
           caughtErrorsIgnorePattern: "^_",
         },
       ],
-      "@typescript-eslint/explicit-function-return-type": [
-        "warn",
-        {
-          allowExpressions: true,
-          allowTypedFunctionExpressions: true,
-          allowHigherOrderFunctions: true,
-        },
-      ],
       "@typescript-eslint/no-non-null-assertion": "warn",
 
       // Disable rules that require type information (too slow for large projects)
