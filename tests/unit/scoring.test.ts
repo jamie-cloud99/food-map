@@ -78,13 +78,13 @@ describe('評分演算法', () => {
       const sorted = sortPlacesByScore(mockPlaces, 1000)
 
       // 檢查分數是否已計算
-      expect(sorted[0].score).toBeDefined()
-      expect(sorted[1].score).toBeDefined()
-      expect(sorted[2].score).toBeDefined()
+      expect(sorted[0]?.score).toBeDefined()
+      expect(sorted[1]?.score).toBeDefined()
+      expect(sorted[2]?.score).toBeDefined()
 
       // 檢查排序是否正確（分數由高到低）
-      expect(sorted[0].score!).toBeGreaterThanOrEqual(sorted[1].score!)
-      expect(sorted[1].score!).toBeGreaterThanOrEqual(sorted[2].score!)
+      expect(sorted[0]?.score ?? 0).toBeGreaterThanOrEqual(sorted[1]?.score ?? 0)
+      expect(sorted[1]?.score ?? 0).toBeGreaterThanOrEqual(sorted[2]?.score ?? 0)
     })
 
     it('應該回傳前 N 個結果', () => {

@@ -1,7 +1,7 @@
 import type { Place } from '@/types/place'
 import Image from 'next/image'
 
-interface PlaceCardProps {
+type PlaceCardProps = {
   place: Place
   rank?: number
   onClick?: () => void

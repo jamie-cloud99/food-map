@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { geocodeAddress, searchNearbyPlaces } from '@/lib/google-places'
 import { sortPlacesByScore } from '@/lib/scoring'
 import type { SearchRequest, SearchResponse } from '@/types/place'
+import type { AxiosErrorResponse } from '@/types/google-places'
 
 export async function POST(request: NextRequest) {
   try {
@@ -47,7 +48,7 @@ export async function POST(request: NextRequest) {
 
     // Check if it's an Axios error
     if (typeof error === 'object' && error !== null && 'response' in error) {
-      const axiosError = error as any
+      const axiosError = error as AxiosErrorResponse
       console.error('API Response Status:', axiosError.response?.status)
       console.error('API Response Data:', axiosError.response?.data)
     }

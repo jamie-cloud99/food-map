@@ -1,5 +1,11 @@
 import axios from 'axios'
 import type { Location, Place, PlaceType } from '@/types/place'
+import type {
+  GoogleGeocodeResponse,
+  GooglePlacesNearbyResponse,
+  GooglePlaceResult,
+  GooglePlaceDetailsResponse,
+} from '@/types/google-places'
 import { calculateDistance } from './scoring'
 import { mockGeocodeAddress, mockSearchNearbyPlaces } from './mock-data'
 
@@ -27,7 +33,7 @@ export async function geocodeAddress(address: string): Promise<Location> {
     console.log('Geocoding address:', address)
     console.log('API Key exists:', !!GOOGLE_PLACES_API_KEY)
 
-    const response = await axios.get(GEOCODING_API_URL, {
+    const response = await axios.get<GoogleGeocodeResponse>(GEOCODING_API_URL, {
       params: {
         address,
         key: GOOGLE_PLACES_API_KEY,
@@ -39,12 +45,18 @@ export async function geocodeAddress(address: string): Promise<Location> {
 
     if (response.data.status !== 'OK' || !response.data.results.length) {
       console.warn(`❌ Geocoding API failed: ${response.data.status}`)
-      console.warn(`Error message: ${response.data.error_message}`)
+      console.warn(`Error message: ${response.data.error_message ?? 'Unknown error'}`)
       console.warn('⚠️  Falling back to MOCK data')
       return mockGeocodeAddress(address)
     }
 
-    const { lat, lng } = response.data.results[0].geometry.location
+    const firstResult = response.data.results[0]
+    if (!firstResult) {
+      console.warn('⚠️  No results found, falling back to MOCK data')
+      return mockGeocodeAddress(address)
+    }
+
+    const { lat, lng } = firstResult.geometry.location
     console.log('✅ Geocoded location:', { lat, lng })
     return { lat, lng }
   } catch (error) {
@@ -64,7 +76,7 @@ export async function searchNearbyPlaces(
 ): Promise<Place[]> {
   // Use mock data in development mode or when API is not configured
   if (USE_MOCK_DATA || !GOOGLE_PLACES_API_KEY) {
-    console.log('🎭 Using MOCK places data')
+    console.warn('🎭 Using MOCK nearby places data for location:', location)
     return mockSearchNearbyPlaces(location, radius)
   }
 
@@ -79,7 +91,7 @@ export async function searchNearbyPlaces(
 
     // 對每個類型進行搜尋
     for (const placeType of types) {
-      const response = await axios.get(PLACES_NEARBY_API_URL, {
+      const response = await axios.get<GooglePlacesNearbyResponse>(PLACES_NEARBY_API_URL, {
         params: {
           location: `${location.lat},${location.lng}`,
           radius,
@@ -90,7 +102,7 @@ export async function searchNearbyPlaces(
       })
 
       if (response.data.status === 'OK' && response.data.results) {
-        const places = response.data.results.map((result: any) =>
+        const places = response.data.results.map((result) =>
           mapGooglePlaceToPlace(result, location)
         )
         allPlaces.push(...places)
@@ -113,9 +125,9 @@ export async function searchNearbyPlaces(
 /**
  * 取得地點詳細資訊
  */
-export async function getPlaceDetails(placeId: string): Promise<any> {
+export async function getPlaceDetails(placeId: string): Promise<GooglePlaceDetailsResponse['result']> {
   try {
-    const response = await axios.get(PLACE_DETAILS_API_URL, {
+    const response = await axios.get<GooglePlaceDetailsResponse>(PLACE_DETAILS_API_URL, {
       params: {
         place_id: placeId,
         fields:
@@ -150,7 +162,7 @@ export function getPhotoUrl(
  * 將 Google Places API 回應轉換為我們的 Place 型別
  */
 function mapGooglePlaceToPlace(
-  googlePlace: any,
+  googlePlace: GooglePlaceResult,
   userLocation: Location
 ): Place {
   const placeLocation: Location = {

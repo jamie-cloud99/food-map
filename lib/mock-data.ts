@@ -27,7 +27,7 @@ export function mockGeocodeAddress(address: string): Location {
  * Mock nearby places search for development
  */
 export function mockSearchNearbyPlaces(
-  location: Location,
+  _location: Location,
   radius: number
 ): Place[] {
   const mockPlaces: Place[] = [
