@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+    "build": "next build",
+    "build:vercel": "./scripts/build-vercel.sh",
     "start": "next start",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
@@ -13,7 +14,9 @@
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
     "validate": "npm run type-check && npm run lint && npm test -- --run",
-    "prepare": "husky"
+    "prepare": "husky",
+    "postbuild": "prisma generate",
+    "vercel-build": "npm run build:vercel"
   },
   "dependencies": {
     "@prisma/client": "^6.17.1",
