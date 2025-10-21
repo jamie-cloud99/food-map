@@ -2,13 +2,14 @@
  * 搜尋功能相關的 API 服務
  */
 import axios from 'axios'
-import type { Place, Location } from '@/types/place'
+import type { Place, Location, FilterOptions } from '@/types/place'
 
 // 搜尋請求參數類型
 export type SearchPlacesRequest = {
   address: string
   radius: number
   type: 'all' | 'restaurant' | 'cafe' | 'bar'
+  filters?: FilterOptions
 }
 
 // 搜尋回應類型

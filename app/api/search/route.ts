@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { geocodeAddress, searchNearbyPlaces } from '@/lib/google-places'
 import { sortPlacesByScore } from '@/lib/scoring'
+import { applyFilters } from '@/lib/filters'
 import type { SearchRequest, SearchResponse } from '@/types/place'
 import type { AxiosErrorResponse } from '@/types/google-places'
 
 export async function POST(request: NextRequest) {
   try {
     const body: SearchRequest = await request.json()
-    const { address, radius = 1000, type = 'restaurant' } = body
+    const { address, radius = 1000, type = 'restaurant', filters } = body
 
     // 驗證必要參數
     if (!address) {
@@ -26,12 +27,17 @@ export async function POST(request: NextRequest) {
     // 3. 計算評分並排序
     const sortedPlaces = sortPlacesByScore(places, radius)
 
-    // 4. 取得 Top 5
-    const top5 = sortedPlaces.slice(0, 5)
+    // 4. 套用篩選條件（如果有的話）
+    const filteredPlaces = filters
+      ? applyFilters(sortedPlaces, filters)
+      : sortedPlaces
+
+    // 5. 取得 Top 5
+    const top5 = filteredPlaces.slice(0, 5)
 
     const response: SearchResponse = {
       location,
-      places: sortedPlaces,
+      places: filteredPlaces,
       top5,
     }
 

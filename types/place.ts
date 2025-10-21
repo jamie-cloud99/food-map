@@ -62,6 +62,7 @@ export type SearchRequest = {
   address: string
   radius?: number // 預設 1000m
   type?: PlaceType
+  filters?: FilterOptions // 篩選條件
 }
 
 // 搜尋回應
@@ -87,7 +88,12 @@ export type SortBy =
   | 'distance'    // 距離
   | 'reviews'     // 評論數
 
-// 篩選條件
+/**
+ * 篩選選項
+ * 價格等級：1-4
+ * 類型：餐廳、咖啡廳、酒吧等
+ * 最低評分：3.5、4.0、4.5
+ */
 export type FilterOptions = {
   priceLevel?: number[] // [1, 2, 3, 4]
   types?: PlaceType[]

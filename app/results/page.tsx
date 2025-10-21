@@ -4,8 +4,9 @@ import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { useSearchPlaces } from '@/lib/features/search'
+import { formatFilterSummary } from '@/lib/filters'
 import PlaceCard from '@/components/PlaceCard'
-import type { Place, Location } from '@/types/place'
+import type { Place, Location, FilterOptions, PlaceType } from '@/types/place'
 
 // 動態載入地圖元件（避免 SSR 問題）
 const MapView = dynamic(() => import('@/components/MapView'), {
@@ -29,6 +30,31 @@ function ResultsContent() {
   const address = searchParams.get('address')
   const radius = parseInt(searchParams.get('radius') || '1000')
 
+  // 解析篩選條件從 URL
+  const filters: FilterOptions | undefined = (() => {
+    const result: FilterOptions = {}
+
+    const priceLevelParam = searchParams.get('priceLevel')
+    if (priceLevelParam) {
+      result.priceLevel = priceLevelParam.split(',').map(Number)
+    }
+
+    const typesParam = searchParams.get('types')
+    if (typesParam) {
+      result.types = typesParam.split(',') as PlaceType[]
+    }
+
+    const minRatingParam = searchParams.get('minRating')
+    if (minRatingParam) {
+      result.minRating = parseFloat(minRatingParam)
+    }
+
+    // 如果沒有任何篩選條件，回傳 undefined
+    return Object.keys(result).length > 0 ? result : undefined
+  })()
+
+  const filterSummary = filters ? formatFilterSummary(filters) : ''
+
   useEffect(() => {
     if (!address) {
       router.push('/')
@@ -40,6 +66,7 @@ function ResultsContent() {
       address,
       radius,
       type: 'all',
+      filters,
     }, {
       onSuccess: (data) => {
         setLocation(data.location)
@@ -49,7 +76,8 @@ function ResultsContent() {
         console.error('Search error:', err)
       }
     })
-  }, [address, radius, router, searchPlaces])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [address, radius, searchParams])
 
   if (isLoading) {
     return (
@@ -124,6 +152,11 @@ function ResultsContent() {
             <p className="text-sm text-muted">
               找到 {places.length} 間推薦餐廳（半徑 {radius < 1000 ? `${radius}m` : `${radius / 1000}km`}）
             </p>
+            {filterSummary && (
+              <p className="text-xs text-primary mt-1 font-medium">
+                🔍 篩選條件：{filterSummary}
+              </p>
+            )}
           </div>
         </div>
       </header>
@@ -169,7 +202,7 @@ function ResultsContent() {
           >
             <button
               onClick={() => setSelectedPlace(null)}
-              className="absolute top-4 right-4 text-muted hover:text-foreground text-2xl"
+              className="absolute top-0 right-2 text-muted hover:text-foreground text-2xl"
             >
               ×
             </button>
