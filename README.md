@@ -18,7 +18,7 @@
 ### 前置需求
 
 - Node.js 18+
-- MySQL 8.0+
+- Supabase 帳號（免費）
 - Google Places API Key
 
 ### 安裝步驟
@@ -29,6 +29,15 @@
    cd food-map
    ```
 
+2. **設定 Supabase 資料庫**
+   ```bash
+   # 一鍵設定 Supabase
+   chmod +x scripts/setup-supabase.sh
+   ./scripts/setup-supabase.sh
+   ```
+   
+   或參考詳細設定指南：[docs/supabase-setup.md](./docs/supabase-setup.md)
+
 2. **安裝依賴**
    ```bash
    npm install
@@ -36,37 +45,26 @@
 
 3. **設定環境變數**
 
-   複製 `.env.example` 為 `.env` 並填入以下資訊：
+   環境變數會在執行 Supabase 設定腳本時自動處理，或您可以手動設定：
    ```bash
-   # 資料庫
-   DATABASE_URL="mysql://root:password@localhost:3306/food_map"
-
-   # Google Places API
-   GOOGLE_PLACES_API_KEY="your_api_key_here"
-
-   # App 設定
-   NEXT_PUBLIC_DEFAULT_SEARCH_RADIUS=1000
-   NEXT_PUBLIC_MAP_CENTER_LAT=25.0330
-   NEXT_PUBLIC_MAP_CENTER_LNG=121.5654
+   # 複製環境變數範本
+   cp .env.example .env
+   
+   # 編輯 .env 填入實際值
+   # DATABASE_URL: Supabase 連線字串
+   # GOOGLE_PLACES_API_KEY: Google Places API 金鑰
    ```
 
-4. **建立資料庫**
-   ```bash
-   # 建立 MySQL 資料庫
-   mysql -u root -p -e "CREATE DATABASE food_map CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-
-   # 執行 Prisma migration
-   npx prisma migrate dev
-   ```
-
-5. **啟動開發伺服器**
+4. **啟動開發伺服器**
    ```bash
    npm run dev
    ```
 
-6. **開啟瀏覽器**
+5. **開啟瀏覽器**
 
    前往 [http://localhost:3000](http://localhost:3000)
+
+   或檢查健康狀態：[http://localhost:3000/api/health](http://localhost:3000/api/health)
 
 ## 📋 可用指令
 
@@ -100,7 +98,7 @@ npm run lint         # ESLint 檢查
 
 ### 後端
 - **API**: Next.js API Routes
-- **資料庫**: MySQL 8.0
+- **資料庫**: PostgreSQL (Supabase)
 - **ORM**: Prisma
 - **外部服務**: Google Places API
 
@@ -222,8 +220,9 @@ npm test
 
 | 變數名稱 | 說明 | 預設值 |
 |---------|------|--------|
-| `DATABASE_URL` | MySQL 連線字串 | - |
-| `NEXT_PUBLIC_GOOGLE_PLACES_API_KEY` | Google Places API Key | - |
+| `DATABASE_URL` | Supabase PostgreSQL 連線字串 | - |
+| `GOOGLE_PLACES_API_KEY` | Google Places API Key | - |
+| `GEOCODING_API_KEY` | Google Geocoding API Key | - |
 | `NEXT_PUBLIC_DEFAULT_SEARCH_RADIUS` | 預設搜尋半徑（公尺） | 1000 |
 | `NEXT_PUBLIC_MAP_CENTER_LAT` | 地圖中心緯度 | 25.0330 |
 | `NEXT_PUBLIC_MAP_CENTER_LNG` | 地圖中心經度 | 121.5654 |
