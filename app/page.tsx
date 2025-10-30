@@ -207,7 +207,7 @@ export default function Home() {
             <label className="block text-sm font-medium text-foreground mb-3">
               最低評分
             </label>
-            <div className="flex gap-3 justify-center flex-wrap">
+            <div className="flex gap-3 flex-wrap">
               {[
                 { value: 0, label: '不限' },
                 { value: 3.5, label: '3.5+' },
